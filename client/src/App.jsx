@@ -466,7 +466,7 @@ function App() {
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositNotice, setDepositNotice] = useState("");
   const [walletTransactions, setWalletTransactions] = useState([
-    { id: 101, type: "M-PESA STK DEPOSIT", amount: 2500, date: new Date().toLocaleDateString("en-KE"), status: "SUCCESS" },
+    { id: 101, type: "M-PESA STK DEPOSIT", amount: 2500, date: "07/11/2026", status: "Completed" },
   ]);
 
   // Tracking Location Map State
@@ -800,10 +800,10 @@ function App() {
       setWalletTransactions((prev) => [
         {
           id: Date.now(),
-          type: "M-PESA STK TOP-UP",
+          type: "M-PESA STK DEPOSIT",
           amount: numAmount,
-          date: new Date().toLocaleString("en-KE"),
-          status: "SUCCESS",
+          date: new Date().toLocaleDateString("en-KE"),
+          status: "Completed",
         },
         ...prev,
       ]);
@@ -914,8 +914,8 @@ function App() {
                 id: Date.now(),
                 type: `TICKET PURCHASE (${selectedShowtime.movie?.title})`,
                 amount: -finalTotalPrice,
-                date: new Date().toLocaleString("en-KE"),
-                status: "DEBITED",
+                date: new Date().toLocaleDateString("en-KE"),
+                status: "Completed",
               },
               ...prev,
             ]);
@@ -1703,7 +1703,7 @@ function App() {
         </span>
       </button>
 
-      {/* DIGITAL WALLET MODAL */}
+      {/* REDESIGNED CUSTOMER DIGITAL WALLET MODAL */}
       {showWalletModal && (
         <div
           className="modal-backdrop"
@@ -1711,10 +1711,10 @@ function App() {
             if (e.target === e.currentTarget) setShowWalletModal(false);
           }}
         >
-          <div className="seat-modal wallet-modal">
+          <div className="seat-modal wallet-modal-redesigned">
             <div className="modal-heading">
               <div>
-                <span className="eyebrow">CUSTOMER DIGITAL WALLET</span>
+                <span className="eyebrow emerald-eyebrow">CUSTOMER DIGITAL WALLET</span>
                 <h2>Cinemax Balance &amp; M-Pesa Top Up</h2>
               </div>
               <button
@@ -1726,64 +1726,76 @@ function App() {
               </button>
             </div>
 
-            {/* WALLET BALANCE CARD */}
-            <div className="wallet-balance-card">
-              <div className="wallet-balance-left">
-                <span>Available Balance</span>
-                <strong>KSh {formatPrice(walletBalance)}</strong>
-                <small>Linked to {customer?.email || "customer@cinemax.com"}</small>
+            {/* HERO BALANCE CARD */}
+            <div className="hero-wallet-card">
+              <div className="hero-card-left">
+                <span className="micro-balance-label">CURRENT BALANCE</span>
+                <strong className="hero-balance-val">
+                  KSh <span className="emerald-num">{formatPrice(walletBalance)}</span>
+                </strong>
+                <small className="hero-account-email">Linked to {customer?.email || "customer@cinemax.com"}</small>
               </div>
-              <div className="wallet-balance-right">
-                <span className="wallet-badge">⚡ Instant STK Top Up</span>
+
+              <div className="hero-card-right">
+                <svg className="wallet-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                  <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                  <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+                </svg>
+                <span className="instant-stk-badge">⚡ Instant STK Top Up</span>
               </div>
             </div>
 
-            {/* DEPOSIT FORM */}
-            <div className="wallet-deposit-form">
+            {/* M-PESA TOP-UP FORM */}
+            <div className="wallet-deposit-form-redesigned">
               <h3>📱 Load Wallet via M-Pesa STK Push</h3>
 
-              <label>
-                M-Pesa Phone Number:
+              <div className="form-field-group">
+                <label className="field-top-label">M-Pesa Phone Number</label>
                 <input
                   type="tel"
+                  className="wallet-input-field"
                   value={depositPhone}
                   onChange={(e) => setDepositPhone(e.target.value)}
                   placeholder="0712345678"
                   required
                 />
-              </label>
-
-              <label>Select Top-Up Amount (KSh):</label>
-              <div className="deposit-preset-chips">
-                {[500, 1000, 2000, 5000].map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    className={depositAmount === amt ? "preset-chip active" : "preset-chip"}
-                    onClick={() => setDepositAmount(amt)}
-                  >
-                    +KSh {formatPrice(amt)}
-                  </button>
-                ))}
               </div>
 
-              <label className="mt-2">
-                Or Custom Amount:
+              <div className="form-field-group mt-3">
+                <label className="field-top-label">Select Top-Up Amount</label>
+                <div className="deposit-preset-grid">
+                  {[500, 1000, 2000, 5000].map((amt) => (
+                    <button
+                      key={amt}
+                      type="button"
+                      className={depositAmount === amt ? "preset-pill active" : "preset-pill"}
+                      onClick={() => setDepositAmount(amt)}
+                    >
+                      +KSh {formatPrice(amt)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-field-group mt-3">
+                <label className="field-top-label">Or Custom Amount (KSh)</label>
                 <input
                   type="number"
+                  className="wallet-input-field"
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(Number(e.target.value))}
-                  placeholder="Enter amount"
+                  placeholder="Enter custom amount"
                   min={50}
                   max={70000}
                 />
-              </label>
+              </div>
 
-              {depositNotice && <p className="success-message mini mt-2">{depositNotice}</p>}
+              {depositNotice && <p className="success-message mini mt-2 text-center">{depositNotice}</p>}
 
               <button
                 type="button"
-                className="primary-button glow-btn full-width mt-3"
+                className="emerald-cta-btn full-width mt-3"
                 disabled={depositLoading}
                 onClick={handleTopUpWallet}
               >
@@ -1791,21 +1803,33 @@ function App() {
               </button>
             </div>
 
-            {/* RECENT WALLET TRANSACTIONS */}
-            <div className="wallet-history-box">
+            {/* RECENT ACTIVITY FEED STATEMENT */}
+            <div className="activity-feed-box">
               <h4>📜 Recent Wallet Statement</h4>
-              <div className="transactions-list">
-                {walletTransactions.map((tx) => (
-                  <div key={tx.id} className="tx-item">
-                    <div>
-                      <strong>{tx.type}</strong>
-                      <small>{tx.date}</small>
+              <div className="activity-list">
+                {walletTransactions.map((tx) => {
+                  const isDeposit = tx.amount > 0;
+                  return (
+                    <div key={tx.id} className="activity-row">
+                      <div className="activity-left">
+                        <span className={`tx-icon-badge ${isDeposit ? "deposit" : "purchase"}`}>
+                          {isDeposit ? "↓" : "↑"}
+                        </span>
+                        <div>
+                          <strong className="tx-title">{tx.type}</strong>
+                          <span className="tx-timestamp">{tx.date}</span>
+                        </div>
+                      </div>
+
+                      <div className="activity-right">
+                        <span className="tx-status-badge">Completed</span>
+                        <strong className={`tx-amount ${isDeposit ? "emerald-text" : "rose-text"}`}>
+                          {isDeposit ? `+KSh ${formatPrice(tx.amount)}` : `-KSh ${formatPrice(Math.abs(tx.amount))}`}
+                        </strong>
+                      </div>
                     </div>
-                    <span className={tx.amount > 0 ? "green-text font-bold" : "gold-text font-bold"}>
-                      {tx.amount > 0 ? `+KSh ${formatPrice(tx.amount)}` : `-KSh ${formatPrice(Math.abs(tx.amount))}`}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
