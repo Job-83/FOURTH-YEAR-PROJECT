@@ -459,14 +459,14 @@ function App() {
   const [stkPushProcessing, setStkPushProcessing] = useState(false);
 
   // Digital Wallet State
-  const [walletBalance, setWalletBalance] = useState(2500);
+  const [walletBalance, setWalletBalance] = useState(3000);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState(1000);
   const [depositPhone, setDepositPhone] = useState("0712345678");
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositNotice, setDepositNotice] = useState("");
   const [walletTransactions, setWalletTransactions] = useState([
-    { id: 101, type: "M-PESA STK DEPOSIT", amount: 2500, date: "07/11/2026", status: "Completed" },
+    { id: 101, type: "M-PESA STK DEPOSIT", amount: 3000, date: "07/11/2026", status: "Completed" },
   ]);
 
   // Tracking Location Map State
@@ -1134,7 +1134,7 @@ function App() {
 
   return (
     <div className="app" id="home">
-      {/* 1. HEADER NAVIGATION */}
+      {/* 1. REFACTORED TOP NAVIGATION HEADER BAR */}
       <header className="site-header">
         <a className="brand" href="#home" aria-label="Cinemax Home">
           <span className="brand-mark">CX</span>
@@ -1144,45 +1144,52 @@ function App() {
           </span>
         </a>
 
+        {/* SINGLE FLEX CONTAINER FOR NAVIGATION LINKS */}
         <nav className="main-nav" aria-label="Main navigation">
-          <a href="#home">Home</a>
-          <a href="#movies">Movies ({movies.length})</a>
-          <a href="#showtimes">Showtimes</a>
-          <a href="#cinemas">Cinemas &amp; Branches ({cinemas.length})</a>
+          <a href="#home" className="nav-link-item">Home</a>
+          <a href="#movies" className="nav-link-item">Movies ({movies.length})</a>
+          <a href="#showtimes" className="nav-link-item">Showtimes</a>
+          <a href="#cinemas" className="nav-link-item">Cinemas &amp; Branches ({cinemas.length})</a>
           <button
             type="button"
-            className="nav-link-btn"
+            className="nav-link-item"
             onClick={() => setShowMapModal(true)}
           >
             📍 Location Map
           </button>
           {customer && (
-            <>
-              <button
-                type="button"
-                className="nav-link-btn"
-                onClick={openMyTickets}
-              >
-                📜 Booking History
-              </button>
-              <button
-                type="button"
-                className="nav-link-btn wallet-nav-pill"
-                onClick={() => setShowWalletModal(true)}
-              >
-                💳 Wallet: <strong>KSh {formatPrice(walletBalance)}</strong>
-              </button>
-            </>
+            <button
+              type="button"
+              className="nav-link-item"
+              onClick={openMyTickets}
+            >
+              📜 Booking History
+            </button>
           )}
         </nav>
 
+        {/* ACCOUNT CONTROLS & WALLET */}
         <div className="account-controls">
           {customer ? (
             <>
-              <div className="account-user-pill">
-                <span className="user-avatar">{customer.name.charAt(0)}</span>
-                <span className="account-greeting">{customer.name}</span>
-                <span className="loyalty-pts">🏆 150 pts</span>
+              {/* WALLET BADGE GLASS PILL */}
+              <button
+                type="button"
+                className="wallet-glass-pill"
+                onClick={() => setShowWalletModal(true)}
+                title="Open Digital Wallet"
+              >
+                <span className="wallet-icon">💳</span>
+                <span>
+                  Wallet: <strong className="amber-balance">KSh {formatPrice(walletBalance)}</strong>
+                </span>
+              </button>
+
+              {/* USER PROFILE PILL CARD */}
+              <div className="user-profile-pill">
+                <span className="user-avatar-circle">{customer.name.charAt(0)}</span>
+                <span className="account-greeting-name">{customer.name}</span>
+                <span className="points-badge">🏆 150 pts</span>
               </div>
 
               {/* Special Admin Control Panel Button - Visible ONLY for Official Admin Accounts */}
@@ -1198,7 +1205,7 @@ function App() {
 
               <button
                 type="button"
-                className="text-button"
+                className="nav-link-item signout-link"
                 onClick={handleLogout}
               >
                 Sign Out
@@ -1208,7 +1215,7 @@ function App() {
             <>
               <button
                 type="button"
-                className="text-button"
+                className="nav-link-item"
                 onClick={() => openAuth("login")}
               >
                 Sign In

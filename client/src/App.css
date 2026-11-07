@@ -63,22 +63,23 @@ a {
 }
 
 /* --------------------------------------------------
-   SITE HEADER & BRANDING
+   REFACTORED TOP NAVIGATION HEADER BAR
 -------------------------------------------------- */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  min-height: 76px;
-  padding: 14px 6%;
+  min-height: 72px;
+  padding: 12px 5%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  background: rgba(9, 10, 15, 0.95);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(18px);
+  background: rgba(9, 10, 15, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .brand {
@@ -122,77 +123,141 @@ a {
   letter-spacing: 2px;
 }
 
+/* 1. NAVIGATION LINKS (SINGLE FLEX CONTAINER) */
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 28px;
-  color: #c5c5d0;
-  font-size: 14px;
-  font-weight: 500;
+  gap: 24px;
 }
 
-.main-nav a:hover,
-.nav-link-btn:hover {
-  color: var(--gold);
-}
-
-.nav-link-btn {
+.nav-link-item {
   background: none;
   border: none;
-  color: #c5c5d0;
-  padding: 0;
+  padding: 6px 0;
+  color: #9ca3af; /* Muted light gray */
   font-size: 14px;
-  font-weight: 600;
-  transition: color 0.2s;
+  font-weight: 500;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link-item::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #facc15;
+  box-shadow: 0 0 8px #facc15;
+  transition: width 0.2s ease;
+  border-radius: 2px;
+}
+
+.nav-link-item:hover {
+  color: #ffffff;
+}
+
+.nav-link-item:hover::after {
+  width: 100%;
 }
 
 .account-controls {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
-.account-user-pill {
-  display: flex;
+/* 2. WALLET BADGE GLASS PILL */
+.wallet-glass-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 14px;
-  background: var(--surface-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-}
-
-.user-avatar {
-  width: 26px;
-  height: 26px;
-  background: var(--gold);
-  color: #0b0c10;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 12px;
-}
-
-.user-avatar.lg {
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
-}
-
-.account-greeting {
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 9999px;
+  color: #e2e8f0;
   font-size: 13px;
   font-weight: 600;
-  color: #f5f3ee;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.loyalty-pts {
+.wallet-glass-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(250, 204, 21, 0.4);
+  transform: translateY(-1px);
+}
+
+.amber-balance {
+  color: #facc15;
+  font-weight: 800;
+  margin-left: 2px;
+}
+
+/* 3. USER PROFILE PILL CARD */
+.user-profile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 4px 14px 4px 4px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 9999px;
+}
+
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5b83d 0%, #e09f25 100%);
+  color: #0b0c10;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(245, 184, 61, 0.3);
+}
+
+.account-greeting-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.points-badge {
+  padding: 3px 8px;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #facc15;
   font-size: 11px;
   font-weight: 800;
-  color: var(--gold);
-  background: rgba(245, 184, 61, 0.15);
-  padding: 3px 8px;
-  border-radius: 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.signout-link {
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.signout-link:hover {
+  color: #ef4444;
 }
 
 .admin-badge-btn {
@@ -200,10 +265,11 @@ a {
   border: 1px solid #7c3aed;
   color: #ddd6fe;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 700;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .admin-badge-btn:hover {
@@ -237,7 +303,7 @@ a {
 .primary-button.compact {
   padding: 8px 16px;
   font-size: 13px;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
 .glow-btn {
@@ -1001,15 +1067,6 @@ a {
 /* --------------------------------------------------
    REDESIGNED CUSTOMER DIGITAL WALLET (EMERALD SPEC)
 -------------------------------------------------- */
-
-.wallet-nav-pill {
-  padding: 6px 12px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  border-radius: 20px;
-  color: #ffffff;
-  font-size: 13px;
-}
 
 .wallet-modal-redesigned {
   width: 100%;
@@ -2864,7 +2921,7 @@ a {
    RESPONSIVE LAYOUTS FOR PHONES & LAPTOPS
 -------------------------------------------------- */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .site-header {
     flex-wrap: wrap;
     padding: 12px 4%;
@@ -2874,10 +2931,13 @@ a {
     order: 3;
     width: 100%;
     justify-content: space-between;
+    overflow-x: auto;
     padding-top: 10px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
+}
 
+@media (max-width: 768px) {
   .hero h1 {
     font-size: 34px;
   }
