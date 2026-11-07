@@ -1016,7 +1016,8 @@ function App() {
           ? await registerCustomer(
               authName.trim(),
               authEmail.trim(),
-              authPassword
+              authPassword,
+              authPhone.trim()
             )
           : await loginCustomer(authEmail.trim(), authPassword);
 
