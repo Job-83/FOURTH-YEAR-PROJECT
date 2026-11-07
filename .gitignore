@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+client/dist/
+build/
+
+# Environment files
+.env
+.env.local
+*.env
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+*.log
+*.iml
+.gradle
+/local.properties
