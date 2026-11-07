@@ -2923,27 +2923,101 @@ a {
 
 @media (max-width: 1024px) {
   .site-header {
-    flex-wrap: wrap;
     padding: 12px 4%;
   }
 
-  .main-nav {
-    order: 3;
-    width: 100%;
-    justify-content: space-between;
-    overflow-x: auto;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  .desktop-nav-only {
+    display: none !important;
   }
 }
 
 @media (max-width: 768px) {
+  .mobile-header-menu-btn {
+    display: inline-flex !important;
+  }
+
+  .desktop-only-btn {
+    display: none !important;
+  }
+
+  .site-header {
+    padding: 10px 14px;
+  }
+
+  .brand strong {
+    font-size: 13px;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .account-controls {
+    gap: 6px;
+  }
+
+  .wallet-glass-pill {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .user-profile-pill {
+    padding: 2px 8px 2px 2px;
+    height: 32px;
+    gap: 4px;
+  }
+
+  .user-avatar-circle {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+  }
+
+  .account-greeting-name {
+    max-width: 60px;
+    font-size: 10px;
+  }
+
+  .points-badge {
+    padding: 2px 5px;
+    font-size: 9px;
+  }
+
+  .hero {
+    padding: 32px 14px 24px;
+    min-height: auto;
+  }
+
   .hero h1 {
-    font-size: 34px;
+    font-size: 26px;
+    line-height: 1.15;
+  }
+
+  .hero p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .hero-search-bar {
+    flex-direction: column;
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .hero-search-bar input {
+    width: 100%;
+  }
+
+  .hero-features-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-top: 16px;
   }
 
   .offers-banner-section {
     grid-template-columns: 1fr;
+    padding: 20px 14px;
   }
 
   .checkout-grid {
@@ -2952,7 +3026,8 @@ a {
 
   .showtime-card {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 14px;
+    padding: 16px;
   }
 
   .detail-content-grid {
@@ -2962,7 +3037,8 @@ a {
   .sticky-checkout-footer {
     flex-direction: column;
     align-items: stretch;
-    gap: 14px;
+    gap: 12px;
+    padding: 14px;
   }
 
   .footer-right-checkout {
@@ -2970,29 +3046,29 @@ a {
   }
 
   .qr-code-wrapper {
-    max-width: 140px;
+    max-width: 130px;
   }
 
   .qr-center-emblem {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
-  }
-
-  .center-aisle-gap {
-    width: 18px;
-  }
-
-  .seat-rect {
-    width: 28px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     font-size: 10px;
   }
 
+  .center-aisle-gap {
+    width: 14px;
+  }
+
+  .seat-rect {
+    width: 26px;
+    height: 30px;
+    font-size: 9px;
+  }
+
   .floating-download-btn {
-    bottom: 20px;
-    right: 20px;
-    padding: 8px 14px;
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 12px;
   }
 
   .qr-app-install-box {

@@ -1,0 +1,18 @@
+{
+  "short_name": "Cinemax",
+  "name": "Cinemax Kenya - Movie Ticketing Platform",
+  "description": "Book movie tickets, VIP recliner seats, and M-Pesa digital wallet tickets across Kenya.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#090a0f",
+  "theme_color": "#090a0f",
+  "display": "standalone",
+  "orientation": "portrait"
+}

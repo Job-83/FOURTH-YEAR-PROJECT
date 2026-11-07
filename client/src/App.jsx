@@ -429,6 +429,7 @@ function App() {
   const [selectedGenre, setSelectedGenre] = useState("All Genres");
   const [selectedLocation, setSelectedLocation] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [mobileHeaderNavOpen, setMobileHeaderNavOpen] = useState(false);
 
   // Watchlist & Favorites
   const [watchlist, setWatchlist] = useState([]);
@@ -1134,7 +1135,7 @@ function App() {
 
   return (
     <div className="app" id="home">
-      {/* 1. REFACTORED TOP NAVIGATION HEADER BAR */}
+      {/* 1. REFACTORED TOP NAVIGATION HEADER BAR WITH MOBILE RESPONSIVE DRAWER */}
       <header className="site-header">
         <a className="brand" href="#home" aria-label="Cinemax Home">
           <span className="brand-mark">CX</span>
@@ -1144,8 +1145,8 @@ function App() {
           </span>
         </a>
 
-        {/* SINGLE FLEX CONTAINER FOR NAVIGATION LINKS */}
-        <nav className="main-nav" aria-label="Main navigation">
+        {/* DESKTOP NAVIGATION LINKS */}
+        <nav className="main-nav desktop-nav-only" aria-label="Main navigation">
           <a href="#home" className="nav-link-item">Home</a>
           <a href="#movies" className="nav-link-item">Movies ({movies.length})</a>
           <a href="#showtimes" className="nav-link-item">Showtimes</a>
@@ -1168,7 +1169,7 @@ function App() {
           )}
         </nav>
 
-        {/* ACCOUNT CONTROLS & WALLET */}
+        {/* ACCOUNT CONTROLS & MOBILE HAMBURGER BUTTON */}
         <div className="account-controls">
           {customer ? (
             <>
@@ -1196,16 +1197,16 @@ function App() {
               {["ADMIN", "SUPER_ADMIN"].includes(customer.role) && (
                 <button
                   type="button"
-                  className="admin-badge-btn"
+                  className="admin-badge-btn desktop-only-btn"
                   onClick={() => setShowAdminDashboard(true)}
                 >
-                  ⚡ Admin Panel
+                  ⚡ Admin
                 </button>
               )}
 
               <button
                 type="button"
-                className="nav-link-item signout-link"
+                className="nav-link-item signout-link desktop-only-btn"
                 onClick={handleLogout}
               >
                 Sign Out
@@ -1215,7 +1216,7 @@ function App() {
             <>
               <button
                 type="button"
-                className="nav-link-item"
+                className="nav-link-item desktop-only-btn"
                 onClick={() => openAuth("login")}
               >
                 Sign In
@@ -1223,14 +1224,100 @@ function App() {
 
               <button
                 type="button"
-                className="primary-button compact glow-btn"
+                className="primary-button compact glow-btn desktop-only-btn"
                 onClick={() => openAuth("register")}
               >
                 Create Account
               </button>
             </>
           )}
+
+          {/* MOBILE NAV TOGGLE BUTTON */}
+          <button
+            type="button"
+            className="mobile-header-menu-btn"
+            onClick={() => setMobileHeaderNavOpen(!mobileHeaderNavOpen)}
+            aria-label="Toggle Mobile Navigation"
+          >
+            {mobileHeaderNavOpen ? "✕" : "☰"}
+          </button>
         </div>
+
+        {/* DROPDOWN MOBILE DRAWER MENU */}
+        {mobileHeaderNavOpen && (
+          <div className="mobile-header-dropdown">
+            <a href="#home" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
+              🏠 Home
+            </a>
+            <a href="#movies" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
+              🎬 Movies ({movies.length})
+            </a>
+            <a href="#showtimes" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
+              ⏰ Showtimes
+            </a>
+            <a href="#cinemas" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
+              🏛️ Cinemas &amp; Branches ({cinemas.length})
+            </a>
+            <button
+              type="button"
+              className="mobile-dropdown-link text-left"
+              onClick={() => { setShowMapModal(true); setMobileHeaderNavOpen(false); }}
+            >
+              📍 Location Map &amp; Directions
+            </button>
+            {customer ? (
+              <>
+                <button
+                  type="button"
+                  className="mobile-dropdown-link text-left"
+                  onClick={() => { openMyTickets(); setMobileHeaderNavOpen(false); }}
+                >
+                  📜 Booking History &amp; Tickets
+                </button>
+                <button
+                  type="button"
+                  className="mobile-dropdown-link text-left"
+                  onClick={() => { setShowWalletModal(true); setMobileHeaderNavOpen(false); }}
+                >
+                  💳 Digital Wallet (KSh {formatPrice(walletBalance)})
+                </button>
+                {["ADMIN", "SUPER_ADMIN"].includes(customer.role) && (
+                  <button
+                    type="button"
+                    className="mobile-dropdown-link text-left amber-link"
+                    onClick={() => { setShowAdminDashboard(true); setMobileHeaderNavOpen(false); }}
+                  >
+                    ⚡ Open Admin Panel
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="mobile-dropdown-link text-left red-link"
+                  onClick={() => { handleLogout(); setMobileHeaderNavOpen(false); }}
+                >
+                  🚪 Sign Out ({customer.name})
+                </button>
+              </>
+            ) : (
+              <div className="mobile-auth-btns-row">
+                <button
+                  type="button"
+                  className="secondary-button compact full-width"
+                  onClick={() => { openAuth("login"); setMobileHeaderNavOpen(false); }}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  className="primary-button compact glow-btn full-width mt-2"
+                  onClick={() => { openAuth("register"); setMobileHeaderNavOpen(false); }}
+                >
+                  Create Account
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
       {authMessage && (
