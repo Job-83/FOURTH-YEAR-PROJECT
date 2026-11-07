@@ -42,6 +42,7 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
   const isSuperAdmin = customer?.role === "SUPER_ADMIN";
 
   const [activeSection, setActiveSection] = useState("overview");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Data states
   const [moviesList, setMoviesList] = useState(MOCK_MOVIES);
@@ -248,21 +249,36 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
 
   return (
     <div className="admin-portal-shell">
-      {/* SIDEBAR NAVIGATION */}
-      <aside className="admin-sidebar-v2">
+      {/* MOBILE BACKDROP OVERLAY */}
+      {mobileSidebarOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setMobileSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* RESPONSIVE SIDEBAR NAVIGATION */}
+      <aside className={`admin-sidebar-v2 ${mobileSidebarOpen ? "mobile-open" : ""}`}>
         <div className="sidebar-brand-v2">
           <span className="brand-mark sm">CX</span>
           <div>
             <strong>CINEMAX ADMIN</strong>
             <small>PORTAL V2.4 (RBAC)</small>
           </div>
+          <button
+            type="button"
+            className="mobile-close-sidebar-btn"
+            onClick={() => setMobileSidebarOpen(false)}
+          >
+            ✕
+          </button>
         </div>
 
         <nav className="sidebar-nav-v2">
           <button
             type="button"
             className={activeSection === "overview" ? "nav-item-v2 active" : "nav-item-v2"}
-            onClick={() => setActiveSection("overview")}
+            onClick={() => { setActiveSection("overview"); setMobileSidebarOpen(false); }}
           >
             <span className="nav-icon">📊</span>
             <span>Overview &amp; KPIs</span>
@@ -271,7 +287,7 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
           <button
             type="button"
             className={activeSection === "movies" ? "nav-item-v2 active" : "nav-item-v2"}
-            onClick={() => setActiveSection("movies")}
+            onClick={() => { setActiveSection("movies"); setMobileSidebarOpen(false); }}
           >
             <span className="nav-icon">🎬</span>
             <span>Movie Catalog CRUD</span>
@@ -280,7 +296,7 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
           <button
             type="button"
             className={activeSection === "showtimes" ? "nav-item-v2 active" : "nav-item-v2"}
-            onClick={() => setActiveSection("showtimes")}
+            onClick={() => { setActiveSection("showtimes"); setMobileSidebarOpen(false); }}
           >
             <span className="nav-icon">📅</span>
             <span>Showtime Calendar</span>
@@ -289,7 +305,7 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
           <button
             type="button"
             className={activeSection === "bookings" ? "nav-item-v2 active" : "nav-item-v2"}
-            onClick={() => setActiveSection("bookings")}
+            onClick={() => { setActiveSection("bookings"); setMobileSidebarOpen(false); }}
           >
             <span className="nav-icon">🎟️</span>
             <span>Bookings &amp; Refunds</span>
@@ -299,7 +315,7 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
             <button
               type="button"
               className={activeSection === "admins" ? "nav-item-v2 active" : "nav-item-v2"}
-              onClick={() => setActiveSection("admins")}
+              onClick={() => { setActiveSection("admins"); setMobileSidebarOpen(false); }}
             >
               <span className="nav-icon">👤</span>
               <span>Admin Accounts (RBAC)</span>
@@ -329,13 +345,22 @@ export default function AdminDashboard({ customer, onBack, onLogout }) {
       <main className="admin-main-v2">
         {/* ENHANCED HEADER BAR */}
         <header className="admin-header-v2">
+          <button
+            type="button"
+            className="mobile-hamburger-btn"
+            onClick={() => setMobileSidebarOpen(true)}
+            aria-label="Open Admin Navigation Menu"
+          >
+            ☰
+          </button>
+
           <div className="global-admin-search">
             <span className="search-icon">🔍</span>
             <input
               type="search"
               value={globalSearch}
               onChange={(e) => setGlobalSearch(e.target.value)}
-              placeholder="Global Admin Search (Movies, Booking IDs, Emails)..."
+              placeholder="Search movies, booking IDs, emails..."
             />
           </div>
 

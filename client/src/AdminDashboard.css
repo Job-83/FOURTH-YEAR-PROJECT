@@ -1,4 +1,4 @@
-/* REDESIGNED ADMIN DASHBOARD V2.4 (TAILWIND / FINTECH AUDIT SPEC) */
+/* REDESIGNED ADMIN DASHBOARD V2.4 (MOBILE RESPONSIVE DRAWER SPEC) */
 
 .admin-portal-shell {
   display: flex;
@@ -6,6 +6,31 @@
   background: #0f172a; /* Deep Charcoal/Slate */
   color: #f8fafc;
   font-family: Inter, system-ui, sans-serif;
+  position: relative;
+}
+
+.mobile-hamburger-btn {
+  display: none;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #f59e0b;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-close-sidebar-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: auto;
 }
 
 /* SIDEBAR V2 */
@@ -17,6 +42,7 @@
   flex-direction: column;
   padding: 24px 18px;
   flex-shrink: 0;
+  z-index: 100;
 }
 
 .sidebar-brand-v2 {
@@ -120,6 +146,7 @@
   flex: 1;
   padding: 28px 36px;
   overflow-y: auto;
+  min-width: 0;
 }
 
 /* ENHANCED HEADER V2 */
@@ -484,13 +511,14 @@
   background: #1e293b;
   border: 1px solid #334155;
   border-radius: 16px;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .admin-table-v2 {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  min-width: 650px;
 }
 
 .admin-table-v2 th {
@@ -661,6 +689,10 @@
 .role-badge-pill.moderator { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
 .role-badge-pill.finance { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
 
+/* --------------------------------------------------
+   RESPONSIVE MOBILE DRAWER & LAYOUT FIXES
+-------------------------------------------------- */
+
 @media (max-width: 1024px) {
   .kpi-cards-grid-v2 {
     grid-template-columns: repeat(2, 1fr);
@@ -676,5 +708,77 @@
 
   .admin-metrics-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-hamburger-btn {
+    display: inline-flex;
+  }
+
+  .mobile-close-sidebar-btn {
+    display: block;
+  }
+
+  .admin-sidebar-v2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.9);
+  }
+
+  .admin-sidebar-v2.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 6, 11, 0.82);
+    backdrop-filter: blur(6px);
+    z-index: 999;
+  }
+
+  .admin-main-v2 {
+    padding: 16px;
+    width: 100%;
+  }
+
+  .admin-header-v2 {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .global-admin-search {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .kpi-cards-grid-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-bar-row-v2 {
+    grid-template-columns: 120px 1fr 90px;
+    font-size: 11px;
+  }
+
+  .admin-form-2col-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-profile-text {
+    display: none;
   }
 }
