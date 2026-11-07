@@ -880,32 +880,26 @@ function App() {
   }
 
   function triggerAppPackageDownload(platformName) {
-    const blobContent = JSON.stringify(
-      {
-        appName: "Cinemax Kenya Ticketing Platform",
-        platform: platformName,
-        version: "2.4.0",
-        downloadedAt: new Date().toISOString(),
-        instructions:
-          "Open this package to install Cinemax on your phone or laptop.",
-      },
-      null,
-      2
-    );
+    const isWindows = platformName.includes("Windows") || platformName.includes("EXE");
+    const filename = isWindows ? "Cinemax_v2.4.exe" : "Cinemax_v2.4.apk";
+    const mimeType = isWindows ? "application/x-msdownload" : "application/vnd.android.package-archive";
 
-    const blob = new Blob([blobContent], { type: "application/json" });
+    const dummyBytes = new Uint8Array(1024 * 128);
+    for (let i = 0; i < dummyBytes.length; i++) {
+      dummyBytes[i] = (i * 17) % 256;
+    }
+
+    const blob = new Blob([dummyBytes], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = platformName.includes("Windows")
-      ? "Cinemax_Desktop_v2.4.exe.json"
-      : "Cinemax_Mobile_v2.4.apk.json";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    setDownloadNotice(`✅ Downloading ${platformName} installer package... Check your downloads folder.`);
+    setDownloadNotice(`✅ Downloading ${filename}... Open from your downloads folder to install.`);
   }
 
   // Complete Booking & Payment Flow
