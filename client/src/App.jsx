@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 import {
   getMovies,
@@ -430,6 +430,11 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileHeaderNavOpen, setMobileHeaderNavOpen] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
+
+  // Layout mode for movies: "row" (row manner carousel) or "grid"
+  const [movieLayoutMode, setMovieLayoutMode] = useState("row");
+  const movieRowRef = useRef(null);
 
   // Watchlist & Favorites
   const [watchlist, setWatchlist] = useState([]);
@@ -663,6 +668,13 @@ function App() {
       return matchesSearch && matchesLocation;
     });
   }, [showtimes, search, selectedLocation]);
+
+  // Scroll Row Carousel Helper
+  function scrollMovieRow(direction) {
+    if (!movieRowRef.current) return;
+    const scrollAmt = direction === "left" ? -340 : 340;
+    movieRowRef.current.scrollBy({ left: scrollAmt, behavior: "smooth" });
+  }
 
   // Seat Selection Open
   async function openSeatSelection(showtime) {
@@ -1079,6 +1091,109 @@ function App() {
     });
   }
 
+  // Render Movie Card Component
+  function renderMovieCard(movie) {
+    const isWatchlisted = watchlist.includes(movie.id);
+
+    return (
+      <article className="movie-card" key={movie.id}>
+        <div
+          className="movie-poster"
+          onClick={() => setMovieDetail(movie)}
+        >
+          {movie.posterUrl || movie.poster ? (
+            <img
+              src={movie.posterUrl || movie.poster}
+              alt={`${movie.title} poster`}
+              loading="lazy"
+            />
+          ) : (
+            <div className="poster-placeholder">
+              <span className="brand-mark">CX</span>
+              <strong>{movie.title}</strong>
+              <span className="placeholder-sub">CINEMAX EXCLUSIVE</span>
+            </div>
+          )}
+
+          <div className="poster-overlay">
+            <button
+              type="button"
+              className="quick-view-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setMovieDetail(movie);
+              }}
+            >
+              Overview &amp; Cast
+            </button>
+          </div>
+
+          <span className="movie-rating-badge">
+            {getAgeRating(movie.id)}
+          </span>
+
+          <button
+            type="button"
+            className={isWatchlisted ? "watchlist-btn active" : "watchlist-btn"}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWatchlist(movie.id);
+            }}
+            title={isWatchlisted ? "Remove from Watchlist" : "Add to Watchlist"}
+          >
+            {isWatchlisted ? "★ Saved" : "☆ Save"}
+          </button>
+
+          <span className={`movie-status-pill ${movie.status === "Coming Soon" ? "coming" : "now"}`}>
+            {movie.status || "Now Showing"}
+          </span>
+        </div>
+
+        <div className="movie-card-content">
+          <div className="movie-genre-tags">
+            <span className="genre-pill">{movie.genre || "Action/Drama"}</span>
+            {movie.duration && (
+              <span className="duration-pill">⏱️ {movie.duration}m</span>
+            )}
+          </div>
+
+          <h3 onClick={() => setMovieDetail(movie)}>{movie.title}</h3>
+
+          {movie.description && (
+            <p className="movie-description">
+              {movie.description.length > 85
+                ? `${movie.description.slice(0, 85)}...`
+                : movie.description}
+            </p>
+          )}
+
+          <div className="movie-card-actions-row">
+            <button
+              type="button"
+              className="secondary-button compact"
+              onClick={() => playMovieTrailer(movie)}
+            >
+              ▶ Trailer
+            </button>
+
+            <button
+              type="button"
+              className="primary-button compact glow-btn"
+              onClick={() => {
+                setSearch(movie.title);
+                document
+                  .getElementById("showtimes")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Book Now
+            </button>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   // Render Seat Button helper
   function renderSeatButton(seat, isVipRow, row) {
     const isSelected = selectedSeats.includes(seat.id);
@@ -1135,12 +1250,15 @@ function App() {
 
   return (
     <div className="app" id="home">
-      {/* 1. REFACTORED TOP NAVIGATION HEADER BAR WITH MOBILE RESPONSIVE DRAWER */}
+      {/* 1. REFACTORED TOP NAVIGATION HEADER BAR WITH VECTOR LOGO & MOBILE RESPONSIVE DRAWER */}
       <header className="site-header">
         <a className="brand" href="#home" aria-label="Cinemax Home">
-          <span className="brand-mark">CX</span>
+          <div className="cinemax-logo-badge">
+            <span className="logo-reel-icon">📽️</span>
+            <span className="brand-cx">CX</span>
+          </div>
           <span>
-            <strong>CINEMAX</strong>
+            <strong>CINEMAX KENYA</strong>
             <small>500+ MOVIES &amp; TICKETING</small>
           </span>
         </a>
@@ -1157,6 +1275,13 @@ function App() {
             onClick={() => setShowMapModal(true)}
           >
             📍 Location Map
+          </button>
+          <button
+            type="button"
+            className="nav-link-item"
+            onClick={() => setShowAboutModal(true)}
+          >
+            ℹ️ About Us
           </button>
           {customer && (
             <button
@@ -1193,7 +1318,7 @@ function App() {
                 <span className="points-badge">🏆 150 pts</span>
               </div>
 
-              {/* Special Admin Control Panel Button - Visible ONLY for Official Admin Accounts */}
+              {/* Special Admin Control Panel Button */}
               {["ADMIN", "SUPER_ADMIN"].includes(customer.role) && (
                 <button
                   type="button"
@@ -1243,80 +1368,109 @@ function App() {
           </button>
         </div>
 
-        {/* DROPDOWN MOBILE DRAWER MENU */}
+        {/* VERTICAL SLIDE-OUT MOBILE DRAWER MENU */}
         {mobileHeaderNavOpen && (
-          <div className="mobile-header-dropdown">
-            <a href="#home" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
-              🏠 Home
-            </a>
-            <a href="#movies" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
-              🎬 Movies ({movies.length})
-            </a>
-            <a href="#showtimes" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
-              ⏰ Showtimes
-            </a>
-            <a href="#cinemas" className="mobile-dropdown-link" onClick={() => setMobileHeaderNavOpen(false)}>
-              🏛️ Cinemas &amp; Branches ({cinemas.length})
-            </a>
-            <button
-              type="button"
-              className="mobile-dropdown-link text-left"
-              onClick={() => { setShowMapModal(true); setMobileHeaderNavOpen(false); }}
-            >
-              📍 Location Map &amp; Directions
-            </button>
-            {customer ? (
-              <>
+          <>
+            <div className="mobile-drawer-backdrop" onClick={() => setMobileHeaderNavOpen(false)}></div>
+            <aside className="vertical-mobile-drawer">
+              <div className="drawer-header">
+                <div className="brand">
+                  <div className="cinemax-logo-badge sm">
+                    <span className="logo-reel-icon">📽️</span>
+                    <span className="brand-cx">CX</span>
+                  </div>
+                  <strong>CINEMAX MENU</strong>
+                </div>
                 <button
                   type="button"
-                  className="mobile-dropdown-link text-left"
-                  onClick={() => { openMyTickets(); setMobileHeaderNavOpen(false); }}
+                  className="drawer-close-btn"
+                  onClick={() => setMobileHeaderNavOpen(false)}
                 >
-                  📜 Booking History &amp; Tickets
-                </button>
-                <button
-                  type="button"
-                  className="mobile-dropdown-link text-left"
-                  onClick={() => { setShowWalletModal(true); setMobileHeaderNavOpen(false); }}
-                >
-                  💳 Digital Wallet (KSh {formatPrice(walletBalance)})
-                </button>
-                {["ADMIN", "SUPER_ADMIN"].includes(customer.role) && (
-                  <button
-                    type="button"
-                    className="mobile-dropdown-link text-left amber-link"
-                    onClick={() => { setShowAdminDashboard(true); setMobileHeaderNavOpen(false); }}
-                  >
-                    ⚡ Open Admin Panel
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="mobile-dropdown-link text-left red-link"
-                  onClick={() => { handleLogout(); setMobileHeaderNavOpen(false); }}
-                >
-                  🚪 Sign Out ({customer.name})
-                </button>
-              </>
-            ) : (
-              <div className="mobile-auth-btns-row">
-                <button
-                  type="button"
-                  className="secondary-button compact full-width"
-                  onClick={() => { openAuth("login"); setMobileHeaderNavOpen(false); }}
-                >
-                  Sign In
-                </button>
-                <button
-                  type="button"
-                  className="primary-button compact glow-btn full-width mt-2"
-                  onClick={() => { openAuth("register"); setMobileHeaderNavOpen(false); }}
-                >
-                  Create Account
+                  ✕
                 </button>
               </div>
-            )}
-          </div>
+
+              <div className="drawer-body-vertical">
+                <a href="#home" className="vertical-drawer-btn" onClick={() => setMobileHeaderNavOpen(false)}>
+                  🏠 Home
+                </a>
+                <a href="#movies" className="vertical-drawer-btn" onClick={() => setMobileHeaderNavOpen(false)}>
+                  🎬 Browse Movies ({movies.length})
+                </a>
+                <a href="#showtimes" className="vertical-drawer-btn" onClick={() => setMobileHeaderNavOpen(false)}>
+                  ⏰ Session Showtimes
+                </a>
+                <a href="#cinemas" className="vertical-drawer-btn" onClick={() => setMobileHeaderNavOpen(false)}>
+                  🏛️ Cinema Branches ({cinemas.length})
+                </a>
+                <button
+                  type="button"
+                  className="vertical-drawer-btn text-left"
+                  onClick={() => { setShowMapModal(true); setMobileHeaderNavOpen(false); }}
+                >
+                  📍 GPS Location Map
+                </button>
+                <button
+                  type="button"
+                  className="vertical-drawer-btn text-left"
+                  onClick={() => { setShowAboutModal(true); setMobileHeaderNavOpen(false); }}
+                >
+                  ℹ️ About Cinemax
+                </button>
+                {customer ? (
+                  <>
+                    <button
+                      type="button"
+                      className="vertical-drawer-btn text-left"
+                      onClick={() => { openMyTickets(); setMobileHeaderNavOpen(false); }}
+                    >
+                      📜 My Booking History
+                    </button>
+                    <button
+                      type="button"
+                      className="vertical-drawer-btn text-left"
+                      onClick={() => { setShowWalletModal(true); setMobileHeaderNavOpen(false); }}
+                    >
+                      💳 Digital Wallet (KSh {formatPrice(walletBalance)})
+                    </button>
+                    {["ADMIN", "SUPER_ADMIN"].includes(customer.role) && (
+                      <button
+                        type="button"
+                        className="vertical-drawer-btn text-left amber-btn"
+                        onClick={() => { setShowAdminDashboard(true); setMobileHeaderNavOpen(false); }}
+                      >
+                        ⚡ Open Admin Panel
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="vertical-drawer-btn text-left red-btn"
+                      onClick={() => { handleLogout(); setMobileHeaderNavOpen(false); }}
+                    >
+                      🚪 Sign Out ({customer.name})
+                    </button>
+                  </>
+                ) : (
+                  <div className="vertical-drawer-auth">
+                    <button
+                      type="button"
+                      className="secondary-button compact full-width"
+                      onClick={() => { openAuth("login"); setMobileHeaderNavOpen(false); }}
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      type="button"
+                      className="primary-button compact glow-btn full-width mt-2"
+                      onClick={() => { openAuth("register"); setMobileHeaderNavOpen(false); }}
+                    >
+                      Create Account
+                    </button>
+                  </div>
+                )}
+              </div>
+            </aside>
+          </>
         )}
       </header>
 
@@ -1334,7 +1488,7 @@ function App() {
       )}
 
       <main>
-        {/* HOMEPAGE HERO BANNER */}
+        {/* HOMEPAGE HERO BANNER WITH REDESIGNED SEARCH BAR */}
         <section className="hero">
           <div className="hero-overlay"></div>
           <div className="hero-content">
@@ -1351,17 +1505,24 @@ function App() {
               Kenya&apos;s premier movie ticketing platform. Choose from over 500 feature films, select VIP or Standard recliner seats across 12 cinema locations, download your designed ticket &amp; receive it instantly by email!
             </p>
 
-            <div className="hero-search-bar">
-              <span className="hero-search-icon">🔍</span>
+            {/* HIGH-END GLASSMORPHIC SEARCH BAR */}
+            <div className="redesigned-hero-search">
+              <span className="search-glass-icon">🔍</span>
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search across 500+ movies, genres, or cinema branches..."
               />
-              <a href="#movies" className="primary-button compact glow-btn">
-                Browse Catalog ({movies.length})
-              </a>
+              <button
+                type="button"
+                className="primary-button compact glow-btn search-submit-btn"
+                onClick={() => {
+                  document.getElementById("movies")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                Search Catalog ({filteredMovies.length})
+              </button>
             </div>
 
             <div className="hero-features-bar">
@@ -1407,12 +1568,32 @@ function App() {
           </div>
         </section>
 
-        {/* MOVIES PAGE & GENRE FILTERS (500+ MOVIES) */}
+        {/* MOVIES PAGE & GENRE FILTERS (500+ MOVIES ARRANGED IN ROW MANNER & GRID TOGGLE) */}
         <section className="section movies-section" id="movies">
           <div className="section-heading">
             <div>
               <span className="eyebrow">500+ BLOCKBUSTER MOVIES</span>
               <h2>Now Showing &amp; Upcoming Feature Films ({filteredMovies.length})</h2>
+            </div>
+
+            {/* ROW MANNER vs GRID MATRIX VIEW TOGGLE BUTTONS */}
+            <div className="layout-toggle-switcher">
+              <button
+                type="button"
+                className={movieLayoutMode === "row" ? "layout-btn active" : "layout-btn"}
+                onClick={() => setMovieLayoutMode("row")}
+                title="Arrange Movies in Row Manner (Carousel)"
+              >
+                🎞️ Row Manner
+              </button>
+              <button
+                type="button"
+                className={movieLayoutMode === "grid" ? "layout-btn active" : "layout-btn"}
+                onClick={() => setMovieLayoutMode("grid")}
+                title="Arrange Movies in Grid Matrix"
+              >
+                ⣿ Grid Matrix
+              </button>
             </div>
           </div>
 
@@ -1480,110 +1661,37 @@ function App() {
             <p className="message">No movies found matching your search criteria.</p>
           ) : (
             <>
-              {/* MOVIES GRID */}
-              <div className="movie-grid">
-                {paginatedMovies.map((movie) => {
-                  const isWatchlisted = watchlist.includes(movie.id);
+              {/* ROW MANNER HORIZONTAL CAROUSEL VIEW */}
+              {movieLayoutMode === "row" ? (
+                <div className="movie-row-manner-wrapper">
+                  <button
+                    type="button"
+                    className="row-nav-arrow left"
+                    onClick={() => scrollMovieRow("left")}
+                    aria-label="Scroll Movies Left"
+                  >
+                    ‹
+                  </button>
 
-                  return (
-                    <article className="movie-card" key={movie.id}>
-                      <div
-                        className="movie-poster"
-                        onClick={() => setMovieDetail(movie)}
-                      >
-                        {movie.posterUrl || movie.poster ? (
-                          <img
-                            src={movie.posterUrl || movie.poster}
-                            alt={`${movie.title} poster`}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="poster-placeholder">
-                            <span className="brand-mark">CX</span>
-                            <strong>{movie.title}</strong>
-                            <span className="placeholder-sub">CINEMAX EXCLUSIVE</span>
-                          </div>
-                        )}
+                  <div className="movie-row-carousel-track" ref={movieRowRef}>
+                    {paginatedMovies.map((movie) => renderMovieCard(movie))}
+                  </div>
 
-                        <div className="poster-overlay">
-                          <button
-                            type="button"
-                            className="quick-view-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setMovieDetail(movie);
-                            }}
-                          >
-                            Overview &amp; Cast
-                          </button>
-                        </div>
-
-                        <span className="movie-rating-badge">
-                          {getAgeRating(movie.id)}
-                        </span>
-
-                        <button
-                          type="button"
-                          className={isWatchlisted ? "watchlist-btn active" : "watchlist-btn"}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWatchlist(movie.id);
-                          }}
-                          title={isWatchlisted ? "Remove from Watchlist" : "Add to Watchlist"}
-                        >
-                          {isWatchlisted ? "★ Saved" : "☆ Save"}
-                        </button>
-
-                        <span className={`movie-status-pill ${movie.status === "Coming Soon" ? "coming" : "now"}`}>
-                          {movie.status || "Now Showing"}
-                        </span>
-                      </div>
-
-                      <div className="movie-card-content">
-                        <div className="movie-genre-tags">
-                          <span className="genre-pill">{movie.genre || "Action/Drama"}</span>
-                          {movie.duration && (
-                            <span className="duration-pill">⏱️ {movie.duration}m</span>
-                          )}
-                        </div>
-
-                        <h3 onClick={() => setMovieDetail(movie)}>{movie.title}</h3>
-
-                        {movie.description && (
-                          <p className="movie-description">
-                            {movie.description.length > 85
-                              ? `${movie.description.slice(0, 85)}...`
-                              : movie.description}
-                          </p>
-                        )}
-
-                        <div className="movie-card-actions-row">
-                          <button
-                            type="button"
-                            className="secondary-button compact"
-                            onClick={() => playMovieTrailer(movie)}
-                          >
-                            ▶ Trailer
-                          </button>
-
-                          <button
-                            type="button"
-                            className="primary-button compact glow-btn"
-                            onClick={() => {
-                              setSearch(movie.title);
-                              document
-                                .getElementById("showtimes")
-                                ?.scrollIntoView({ behavior: "smooth" });
-                            }}
-                          >
-                            Book Now
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+                  <button
+                    type="button"
+                    className="row-nav-arrow right"
+                    onClick={() => scrollMovieRow("right")}
+                    aria-label="Scroll Movies Right"
+                  >
+                    ›
+                  </button>
+                </div>
+              ) : (
+                /* GRID MATRIX VIEW */
+                <div className="movie-grid">
+                  {paginatedMovies.map((movie) => renderMovieCard(movie))}
+                </div>
+              )}
 
               {/* PAGINATION CONTROLS FOR 500+ MOVIES */}
               {totalPages > 1 && (
@@ -1796,6 +1904,71 @@ function App() {
           <small>Phone &amp; Laptop</small>
         </span>
       </button>
+
+      {/* ABOUT CINEMAX PLATFORM MODAL */}
+      {showAboutModal && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setShowAboutModal(false);
+          }}
+        >
+          <div className="seat-modal about-modal-card">
+            <div className="modal-heading">
+              <div>
+                <span className="eyebrow">PLATFORM INFORMATION</span>
+                <h2>About Cinemax Kenya</h2>
+              </div>
+              <button
+                type="button"
+                className="close-button"
+                onClick={() => setShowAboutModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="about-modal-body">
+              <div className="about-hero-box">
+                <div className="cinemax-logo-badge lg">
+                  <span className="logo-reel-icon">📽️</span>
+                  <span className="brand-cx">CX</span>
+                </div>
+                <h3>Cinemax Ticketing Platform V2.4</h3>
+                <p>
+                  Kenya&apos;s premier online movie ticket reservation platform, offering real-time recliner seat selection, M-Pesa STK Push ticket top-ups, high-resolution QR digital tickets, and GPS cinema branch tracking across 12 Kenyan branches.
+                </p>
+              </div>
+
+              <div className="about-specs-grid">
+                <div className="spec-card">
+                  <strong>🎬 500+ Feature Films</strong>
+                  <p>IMAX 3D, Dolby Atmos, and 4DX session listings updated daily.</p>
+                </div>
+                <div className="spec-card">
+                  <strong>📍 12 Cinema Locations</strong>
+                  <p>Sarit Centre, Junction Mall, Two Rivers, Garden City, Nyali, and Kisumu.</p>
+                </div>
+                <div className="spec-card">
+                  <strong>💳 Instant M-Pesa Integration</strong>
+                  <p>Direct STK Push top-up and digital cinema wallet payments.</p>
+                </div>
+                <div className="spec-card">
+                  <strong>📲 Mobile &amp; Offline PWA</strong>
+                  <p>Native app installable directly onto phone home screens.</p>
+                </div>
+              </div>
+
+              <div className="about-authors-credit">
+                <h4>🎓 Academic Project Credits</h4>
+                <p className="student-credit-text">
+                  System Designed &amp; Developed by <strong>Job and Justus</strong> — <strong>Kisii University Students</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* REDESIGNED CUSTOMER DIGITAL WALLET MODAL */}
       {showWalletModal && (
@@ -2122,17 +2295,25 @@ function App() {
         </div>
       )}
 
-      {/* FOOTER */}
+      {/* FOOTER WITH MANDATORY STUDENT CREDITS NOTE */}
       <footer className="site-footer">
         <div className="footer-top">
           <a className="brand footer-brand" href="#home">
-            <span className="brand-mark">CX</span>
+            <div className="cinemax-logo-badge sm">
+              <span className="logo-reel-icon">📽️</span>
+              <span className="brand-cx">CX</span>
+            </div>
             <span>
-              <strong>CINEMAX</strong>
+              <strong>CINEMAX KENYA</strong>
               <small>TICKETING</small>
             </span>
           </a>
           <p>Kenya&apos;s Complete Professional Cinema Management &amp; Ticket Booking Platform.</p>
+
+          {/* MANDATORY STUDENT CREDIT NOTE */}
+          <div className="footer-student-credit-banner">
+            🎓 System Designed &amp; Developed by <strong>Job and Justus</strong> — <strong>Kisii University Students</strong>
+          </div>
         </div>
 
         <div className="footer-bottom">

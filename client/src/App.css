@@ -63,6 +63,46 @@ a {
 }
 
 /* --------------------------------------------------
+   CINEMAX LOGO BADGE & BRANDING
+-------------------------------------------------- */
+
+.cinemax-logo-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f5b83d 0%, #d97706 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(245, 184, 61, 0.4);
+}
+
+.cinemax-logo-badge.sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.cinemax-logo-badge.lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  font-size: 24px;
+}
+
+.logo-reel-icon {
+  font-size: 20px;
+}
+
+.brand-cx {
+  color: #0b0c10;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: -0.5px;
+}
+
+/* --------------------------------------------------
    REFACTORED TOP NAVIGATION HEADER BAR
 -------------------------------------------------- */
 
@@ -88,26 +128,6 @@ a {
   gap: 12px;
 }
 
-.brand-mark {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  color: #0b0c10;
-  background: linear-gradient(135deg, var(--gold) 0%, #e09f25 100%);
-  border-radius: 12px;
-  font-weight: 900;
-  letter-spacing: -1px;
-  box-shadow: 0 4px 14px var(--gold-glow);
-}
-
-.brand-mark.sm {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
 .brand strong {
   display: block;
   font-size: 15px;
@@ -123,7 +143,6 @@ a {
   letter-spacing: 2px;
 }
 
-/* 1. NAVIGATION LINKS (SINGLE FLEX CONTAINER) */
 .main-nav {
   display: flex;
   align-items: center;
@@ -134,7 +153,7 @@ a {
   background: none;
   border: none;
   padding: 6px 0;
-  color: #9ca3af; /* Muted light gray */
+  color: #9ca3af;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -174,7 +193,7 @@ a {
   gap: 16px;
 }
 
-/* 2. WALLET BADGE GLASS PILL */
+/* WALLET BADGE GLASS PILL */
 .wallet-glass-pill {
   display: inline-flex;
   align-items: center;
@@ -205,7 +224,7 @@ a {
   margin-left: 2px;
 }
 
-/* 3. USER PROFILE PILL CARD */
+/* USER PROFILE PILL CARD */
 .user-profile-pill {
   display: inline-flex;
   align-items: center;
@@ -276,6 +295,108 @@ a {
   background: #6d28d9;
   color: #ffffff;
   transform: translateY(-1px);
+}
+
+/* VERTICAL SLIDE-OUT MOBILE DRAWER */
+.mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 11, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 998;
+}
+
+.vertical-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  background: #090a0f;
+  border-right: 1px solid var(--border-highlight);
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.95);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  animation: slideDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDrawer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.drawer-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.drawer-body-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.vertical-drawer-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: #f5f3ee;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.vertical-drawer-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.vertical-drawer-btn.amber-btn {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.vertical-drawer-btn.red-btn {
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.vertical-drawer-auth {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .primary-button {
@@ -355,7 +476,7 @@ a {
 }
 
 /* --------------------------------------------------
-   HERO BANNER SECTION
+   HERO BANNER SECTION & REDESIGNED SEARCH
 -------------------------------------------------- */
 
 .hero {
@@ -435,30 +556,41 @@ a {
   margin-bottom: 28px;
 }
 
-.hero-search-bar {
+.redesigned-hero-search {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
-  background: var(--surface-card);
+  padding: 8px 10px 8px 18px;
+  background: rgba(22, 24, 36, 0.85);
   border: 1px solid var(--border-highlight);
-  border-radius: 14px;
-  margin-bottom: 40px;
-  max-width: 580px;
+  backdrop-filter: blur(16px);
+  border-radius: 18px;
+  margin-bottom: 36px;
+  max-width: 620px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
-.hero-search-icon {
+.redesigned-hero-search:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(245, 184, 61, 0.3);
+}
+
+.search-glass-icon {
   font-size: 18px;
-  margin-left: 6px;
 }
 
-.hero-search-bar input {
+.redesigned-hero-search input {
   flex: 1;
   background: none;
   border: none;
   outline: none;
   color: #ffffff;
   font-size: 14px;
+}
+
+.search-submit-btn {
+  white-space: nowrap;
 }
 
 .hero-features-bar {
@@ -543,7 +675,7 @@ a {
 }
 
 /* --------------------------------------------------
-   GENRE FILTERS & MOVIES SECTION
+   GENRE FILTERS & MOVIES SECTION (ROW MANNER & GRID)
 -------------------------------------------------- */
 
 .section {
@@ -574,6 +706,32 @@ a {
   font-weight: 800;
   margin: 0;
   color: #ffffff;
+}
+
+.layout-toggle-switcher {
+  display: flex;
+  gap: 8px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.layout-btn {
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.layout-btn.active {
+  background: var(--gold);
+  color: #0b0c10;
 }
 
 .movie-tabs {
@@ -640,6 +798,55 @@ a {
   border-color: var(--gold-light);
   font-weight: 800;
 }
+
+/* MOVIE ROW MANNER HORIZONTAL CAROUSEL */
+.movie-row-manner-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.movie-row-carousel-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 4px 20px;
+  width: 100%;
+}
+
+.movie-row-carousel-track .movie-card {
+  min-width: 240px;
+  max-width: 260px;
+  flex-shrink: 0;
+}
+
+.row-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(9, 10, 15, 0.9);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 24px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+  transition: all 0.2s;
+}
+
+.row-nav-arrow:hover {
+  background: var(--gold);
+  color: #0b0c10;
+}
+
+.row-nav-arrow.left { left: -16px; }
+.row-nav-arrow.right { right: -16px; }
 
 .movie-grid {
   display: grid;
@@ -1062,6 +1269,103 @@ a {
   padding: 12px;
   background: #10121d;
   border-radius: 8px;
+}
+
+/* --------------------------------------------------
+   ABOUT CINEMAX MODAL
+-------------------------------------------------- */
+
+.about-modal-card {
+  max-width: 640px;
+}
+
+.about-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-hero-box {
+  text-align: center;
+  padding: 24px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.about-hero-box h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.about-hero-box p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.about-specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.spec-card {
+  padding: 16px;
+  background: #10121d;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.spec-card strong {
+  display: block;
+  font-size: 13px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.spec-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.about-authors-credit {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(245, 184, 61, 0.12) 0%, rgba(16, 185, 129, 0.12) 100%);
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.about-authors-credit h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.student-credit-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--gold);
+}
+
+.footer-student-credit-banner {
+  padding: 10px 18px;
+  background: rgba(245, 184, 61, 0.12);
+  border: 1px solid rgba(245, 184, 61, 0.3);
+  border-radius: 20px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 14px;
 }
 
 /* --------------------------------------------------
@@ -2998,13 +3302,13 @@ a {
     line-height: 1.5;
   }
 
-  .hero-search-bar {
+  .redesigned-hero-search {
     flex-direction: column;
     max-width: 100%;
     padding: 10px;
   }
 
-  .hero-search-bar input {
+  .redesigned-hero-search input {
     width: 100%;
   }
 
@@ -3074,6 +3378,10 @@ a {
   .qr-app-install-box {
     flex-direction: column;
     text-align: center;
+  }
+
+  .about-specs-grid {
+    grid-template-columns: 1fr;
   }
 
   .map-display-card {
