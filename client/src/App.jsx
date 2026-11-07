@@ -2749,9 +2749,19 @@ function App() {
         >
           <div className="seat-modal ticket-stub-modal">
             <div className="ticket-header">
-              <span className="ticket-badge-success">✓ PAYMENT &amp; BOOKING CONFIRMED</span>
-              <h2>Digital Cinema Ticket</h2>
-              <p>Scan this QR code at the cinema turnstile for automatic entry.</p>
+              <div className="ticket-header-content">
+                <span className="ticket-badge-success">✓ PAYMENT &amp; BOOKING CONFIRMED</span>
+                <h2>Digital Cinema Ticket</h2>
+                <p>Scan this QR code at the cinema turnstile for automatic entry.</p>
+              </div>
+              <button
+                type="button"
+                className="close-button ticket-close-btn"
+                onClick={() => setConfirmedBooking(null)}
+                aria-label="Close ticket"
+              >
+                ×
+              </button>
             </div>
 
             <div className="ticket-stub-body">

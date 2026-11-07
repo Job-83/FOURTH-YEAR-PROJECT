@@ -2144,17 +2144,32 @@ a {
 -------------------------------------------------- */
 
 .ticket-stub-modal {
-  max-width: 520px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 88vh;
   background: #10121d;
   border: 1px solid var(--border-highlight);
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.95);
+  margin: auto;
 }
 
 .ticket-header {
-  padding: 24px 24px 16px;
+  position: relative;
+  padding: 20px 24px 14px;
   background: linear-gradient(135deg, #1e1b4b 0%, #31103f 100%);
   text-align: center;
+}
+
+.ticket-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .ticket-badge-success {
@@ -2165,23 +2180,23 @@ a {
   font-size: 11px;
   font-weight: 800;
   border-radius: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .ticket-header h2 {
-  margin: 0 0 6px;
-  font-size: 22px;
+  margin: 0 0 4px;
+  font-size: 20px;
   color: #ffffff;
 }
 
 .ticket-header p {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: #c7d2fe;
 }
 
 .ticket-stub-body {
-  padding: 24px;
+  padding: 18px 20px;
   background: #161826;
   position: relative;
 }
@@ -2190,7 +2205,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .ticket-brand {
@@ -2218,11 +2233,11 @@ a {
 .ticket-customer-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  padding: 12px 14px;
+  gap: 12px;
+  padding: 10px 12px;
   background: #10121d;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .ticket-customer-row span {
@@ -2239,25 +2254,25 @@ a {
 }
 
 .ticket-movie-details h3 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   color: #ffffff;
 }
 
 .ticket-hall-info {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
-  margin: 0 0 16px;
+  margin: 0 0 12px;
 }
 
 .ticket-time-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 12px 16px;
+  gap: 12px;
+  padding: 10px 14px;
   background: #10121d;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .ticket-time-grid span {
@@ -2276,21 +2291,21 @@ a {
 /* TICKET DIVIDER NOTCHES */
 .ticket-divider {
   position: relative;
-  margin: 24px -24px;
+  margin: 16px -20px;
   display: flex;
   align-items: center;
 }
 
 .stub-notch {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background: #10121d;
   border-radius: 50%;
   position: absolute;
 }
 
-.stub-notch.left { left: -12px; }
-.stub-notch.right { right: -12px; }
+.stub-notch.left { left: -10px; }
+.stub-notch.right { right: -10px; }
 
 .stub-line {
   width: 100%;
@@ -2301,7 +2316,7 @@ a {
 .ticket-bottom-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .ticket-seats-list span,
@@ -2312,7 +2327,7 @@ a {
 }
 
 .ticket-seats-list strong {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--gold);
 }
 
@@ -2323,13 +2338,13 @@ a {
 /* RESPONSIVE REAL QR CODE WRAPPER */
 .ticket-qrcode-section {
   text-align: center;
-  padding: 20px;
+  padding: 14px;
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border: 2px solid var(--gold);
 }
 
@@ -2339,7 +2354,7 @@ a {
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 180px;
+  max-width: 150px;
   aspect-ratio: 1 / 1;
 }
 
