@@ -1080,152 +1080,268 @@ a {
    SHOWTIMES SECTION & LOCATION FILTERS
 -------------------------------------------------- */
 
-.location-filter-tabs {
+/* --------------------------------------------------
+   SHOWTIMES SECTION, DATE PICKER & GROUPED ACCORDIONS
+-------------------------------------------------- */
+
+.horizontal-date-picker {
   display: flex;
   align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.picker-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.date-pills-track {
+  display: flex;
   gap: 10px;
-  margin-bottom: 24px;
+}
+
+.date-pill-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 18px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 84px;
+}
+
+.date-pill-btn:hover,
+.date-pill-btn.active {
+  background: linear-gradient(135deg, var(--gold) 0%, #e0a027 100%);
+  color: #0b0c10;
+  border-color: var(--gold-light);
+  box-shadow: 0 4px 14px var(--gold-glow);
+}
+
+.date-day-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.date-num-label {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.advanced-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-highlight);
+  border-radius: 16px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
 }
 
-.filter-label {
-  font-size: 13px;
-  color: var(--gold);
-  font-weight: 700;
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 220px;
 }
 
-.loc-tab {
-  padding: 8px 16px;
+.filter-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.filter-select-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: #090a0f;
+  border: 1px solid var(--border-highlight);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-select-input:focus {
+  border-color: var(--gold);
+}
+
+/* GROUPED ACCORDION SHOWTIMES */
+.showtime-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.grouped-showtime-card {
   background: var(--surface-card);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.2s;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.loc-tab:hover,
-.loc-tab.active {
-  background: var(--surface-hover);
-  border-color: var(--gold);
-  color: var(--gold);
+.grouped-card-header {
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #181a28 0%, #10121d 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.showtime-list {
+.movie-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.showtime-movie-icon {
+  font-size: 28px;
+}
+
+.movie-header-left h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.movie-meta-tags {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cinema-sessions-list {
+  padding: 16px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.showtime-card {
-  background: var(--surface-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
-  align-items: center;
-  gap: 24px;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.showtime-card:hover {
-  border-color: var(--border-highlight);
-  background: var(--surface-hover);
-}
-
-.showtime-movie {
+.cinema-session-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
+  padding: 12px 16px;
+  background: #0f111a;
+  border: 1px solid var(--border-highlight);
+  border-radius: 14px;
 }
 
-.showtime-play-icon {
-  width: 44px;
-  height: 44px;
-  background: rgba(245, 184, 61, 0.1);
-  color: var(--gold);
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
+.cinema-row-label {
+  min-width: 200px;
 }
 
-.showtime-movie h3 {
-  font-size: 18px;
-  font-weight: 800;
-  margin: 0 0 4px;
+.cinema-row-label strong {
+  display: block;
+  font-size: 14px;
   color: #ffffff;
 }
 
-.showtime-cinema-location {
-  font-size: 13px;
+.cinema-row-label small {
+  display: block;
+  font-size: 11px;
   color: var(--muted);
-  margin: 0 0 6px;
+  margin-top: 2px;
 }
 
-.hall-badge-row {
+.showtime-pills-wrap {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.showtime-pill-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  background: #181a28;
+  border: 1px solid var(--border-highlight);
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.showtime-pill-btn:hover {
+  background: var(--gold);
+  color: #0b0c10;
+  border-color: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px var(--gold-glow);
+}
+
+.pill-time {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pill-format {
+  font-size: 9px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.showtime-pill-btn:hover .pill-format {
+  color: #0b0c10;
+}
+
+.pill-price {
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+  margin-top: 2px;
+}
+
+.showtime-pill-btn:hover .pill-price {
+  color: #0b0c10;
+}
+
+/* MOBILE QUICK BOOK FAB */
+.mobile-quick-book-fab {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  z-index: 99;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.hall-pill {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  background: #232738;
-  color: #d1d5db;
-  border-radius: 4px;
-}
-
-.format-tag {
-  font-size: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--gold) 0%, #e0a027 100%);
+  color: #0b0c10;
+  border: none;
+  border-radius: 30px;
   font-weight: 900;
-  padding: 2px 6px;
-  background: linear-gradient(90deg, #b91c1c 0%, #dc2626 100%);
-  color: #ffffff;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(245, 184, 61, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.format-tag.mini {
-  margin-left: 8px;
-}
-
-.showtime-time-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.showtime-date {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.showtime-clock {
-  font-size: 16px;
-  color: var(--gold);
-  font-weight: 800;
-}
-
-.showtime-price-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.price-label {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.price-value {
-  font-size: 18px;
-  color: #ffffff;
-  font-weight: 800;
+.mobile-quick-book-fab:hover {
+  transform: translateY(-3px) scale(1.04);
 }
 
 /* --------------------------------------------------

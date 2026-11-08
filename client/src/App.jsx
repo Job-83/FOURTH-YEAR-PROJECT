@@ -432,9 +432,26 @@ function App() {
   const [mobileHeaderNavOpen, setMobileHeaderNavOpen] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
 
+  // Horizontal Date Picker state
+  const [selectedDateIdx, setSelectedDateIdx] = useState(0);
+  const [selectedFormatFilter, setSelectedFormatFilter] = useState("all");
+
   // Layout mode for movies: "row" (row manner carousel) or "grid"
   const [movieLayoutMode, setMovieLayoutMode] = useState("row");
   const movieRowRef = useRef(null);
+
+  // Date Pills Data (5 Days starting from Today)
+  const DATE_PILLS = useMemo(() => {
+    return Array.from({ length: 5 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      return {
+        idx: i,
+        dayLabel: i === 0 ? "Today" : d.toLocaleDateString("en-KE", { weekday: "short" }),
+        dateStr: d.toLocaleDateString("en-KE", { month: "short", day: "numeric" }),
+      };
+    });
+  }, []);
 
   // Watchlist & Favorites
   const [watchlist, setWatchlist] = useState([]);
@@ -455,7 +472,7 @@ function App() {
 
   // Checkout Step
   const [checkoutStep, setCheckoutStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("mpesa");
+  const [paymentMethod, setPaymentMethod] = useState("wallet"); // Default to 1-Click Wallet
   const [mpesaPhone, setMpesaPhone] = useState("0712345678");
   const [cardNumber, setCardNumber] = useState("");
   const [promoInput, setPromoInput] = useState("");
@@ -465,14 +482,14 @@ function App() {
   const [stkPushProcessing, setStkPushProcessing] = useState(false);
 
   // Digital Wallet State
-  const [walletBalance, setWalletBalance] = useState(3000);
+  const [walletBalance, setWalletBalance] = useState(8000);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState(1000);
   const [depositPhone, setDepositPhone] = useState("0712345678");
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositNotice, setDepositNotice] = useState("");
   const [walletTransactions, setWalletTransactions] = useState([
-    { id: 101, type: "M-PESA STK DEPOSIT", amount: 3000, date: "07/11/2026", status: "Completed" },
+    { id: 101, type: "M-PESA STK DEPOSIT", amount: 8000, date: "07/11/2026", status: "Completed" },
   ]);
 
   // Tracking Location Map State
@@ -696,6 +713,38 @@ function App() {
       return matchesSearch && matchesLocation;
     });
   }, [showtimes, search, selectedLocation]);
+
+  // Grouped Showtimes by Movie for Accordions & Pill Buttons
+  const showtimesGroupedByMovie = useMemo(() => {
+    const groups = {};
+
+    filteredShowtimes.forEach((st) => {
+      const formatTag = getFormatTag(st.id);
+      if (
+        selectedFormatFilter !== "all" &&
+        !formatTag.toLowerCase().includes(selectedFormatFilter.toLowerCase())
+      ) {
+        return;
+      }
+
+      const mTitle = st.movie?.title || "Movie Session";
+      if (!groups[mTitle]) {
+        groups[mTitle] = {
+          movie: st.movie,
+          cinemas: {},
+        };
+      }
+
+      const cName = st.hall?.cinema?.name || "Cinemax Branch";
+      if (!groups[mTitle].cinemas[cName]) {
+        groups[mTitle].cinemas[cName] = [];
+      }
+
+      groups[mTitle].cinemas[cName].push(st);
+    });
+
+    return groups;
+  }, [filteredShowtimes, selectedFormatFilter]);
 
   // Scroll Row Carousel Helper
   function scrollMovieRow(direction) {
@@ -959,7 +1008,7 @@ function App() {
           const completeBookingObj = {
             ...response.booking,
             user: customer,
-            paymentMethod: paymentMethod === "wallet" ? "Cinemax Digital Wallet" : paymentMethod === "mpesa" ? `M-Pesa STK (${mpesaPhone})` : paymentMethod === "card" ? "Credit/Debit Card" : "Cash at Counter",
+            paymentMethod: paymentMethod === "wallet" ? "Cinemax Digital Wallet (1-Click)" : paymentMethod === "mpesa" ? `M-Pesa STK (${mpesaPhone})` : paymentMethod === "card" ? "Credit/Debit Card" : "Cash at Counter",
             discount: discountAmount,
             totalPrice: finalTotalPrice,
           };
@@ -1272,7 +1321,7 @@ function App() {
 
   return (
     <div className="app" id="home">
-      {/* 1. REFACTORED TOP NAVIGATION HEADER BAR WITH VECTOR LOGO & MOBILE RESPONSIVE DRAWER */}
+      {/* 1. STICKY TOP NAVIGATION HEADER BAR WITH VECTOR LOGO & STICKY CONTROLS */}
       <header className="site-header">
         <a className="brand" href="#home" aria-label="Cinemax Home">
           <div className="cinemax-logo-badge">
@@ -1290,20 +1339,20 @@ function App() {
           <a href="#home" className="nav-link-item">Home</a>
           <a href="#movies" className="nav-link-item">Movies ({movies.length})</a>
           <a href="#showtimes" className="nav-link-item">Showtimes</a>
-          <a href="#cinemas" className="nav-link-item">Cinemas &amp; Branches ({cinemas.length})</a>
+          <a href="#cinemas" className="nav-link-item">Cinemas ({cinemas.length})</a>
           <button
             type="button"
             className="nav-link-item"
             onClick={() => setShowMapModal(true)}
           >
-            📍 Location Map
+            📍 Map
           </button>
           <button
             type="button"
             className="nav-link-item"
             onClick={() => setShowAboutModal(true)}
           >
-            ℹ️ About Us
+            ℹ️ About
           </button>
           {customer && (
             <button
@@ -1311,36 +1360,36 @@ function App() {
               className="nav-link-item"
               onClick={openMyTickets}
             >
-              📜 Booking History
+              📜 My Tickets
             </button>
           )}
         </nav>
 
-        {/* ACCOUNT CONTROLS & MOBILE HAMBURGER BUTTON */}
+        {/* ACCOUNT CONTROLS & WALLET DISPLAY */}
         <div className="account-controls">
+          {/* WALLET BADGE GLASS PILL */}
+          <button
+            type="button"
+            className="wallet-glass-pill"
+            onClick={() => setShowWalletModal(true)}
+            title="Open Digital Wallet"
+          >
+            <span className="wallet-icon">💳</span>
+            <span>
+              Wallet: <strong className="amber-balance">KSh {formatPrice(walletBalance)}</strong>
+            </span>
+          </button>
+
           {customer ? (
             <>
-              {/* WALLET BADGE GLASS PILL */}
-              <button
-                type="button"
-                className="wallet-glass-pill"
-                onClick={() => setShowWalletModal(true)}
-                title="Open Digital Wallet"
-              >
-                <span className="wallet-icon">💳</span>
-                <span>
-                  Wallet: <strong className="amber-balance">KSh {formatPrice(walletBalance)}</strong>
-                </span>
-              </button>
-
               {/* USER PROFILE PILL CARD */}
               <div className="user-profile-pill">
                 <span className="user-avatar-circle">{customer.name.charAt(0)}</span>
                 <span className="account-greeting-name">{customer.name}</span>
-                <span className="points-badge">🏆 150 pts</span>
+                <span className="points-badge">🏆 150</span>
               </div>
 
-              {/* Special Admin Control Panel Button */}
+              {/* Admin Panel Button */}
               {["ADMIN", "SUPER_ADMIN"].includes(customer.role) && (
                 <button
                   type="button"
@@ -1446,7 +1495,7 @@ function App() {
                       className="vertical-drawer-btn text-left"
                       onClick={() => { openMyTickets(); setMobileHeaderNavOpen(false); }}
                     >
-                      📜 My Booking History
+                      📜 My Tickets &amp; QR
                     </button>
                     <button
                       type="button"
@@ -1745,7 +1794,7 @@ function App() {
           )}
         </section>
 
-        {/* SHOWTIMES & CINEMAS SECTION */}
+        {/* SHOWTIMES & CINEMAS SECTION WITH HORIZONTAL DATE PICKER & GROUPED ACCORDIONS */}
         <section className="section showtimes-section" id="showtimes">
           <div className="section-heading">
             <div>
@@ -1754,27 +1803,54 @@ function App() {
             </div>
           </div>
 
-          {/* LOCATION FILTER TABS */}
-          <div className="location-filter-tabs">
-            <span className="filter-label">📍 Filter Location:</span>
-            <button
-              type="button"
-              className={selectedLocation === "all" ? "loc-tab active" : "loc-tab"}
-              onClick={() => setSelectedLocation("all")}
-            >
-              All Cinemas ({cinemas.length})
-            </button>
+          {/* HORIZONTAL DATE PICKER PILLS */}
+          <div className="horizontal-date-picker">
+            <span className="picker-label">📅 Select Date:</span>
+            <div className="date-pills-track">
+              {DATE_PILLS.map((dp) => (
+                <button
+                  key={dp.idx}
+                  type="button"
+                  className={selectedDateIdx === dp.idx ? "date-pill-btn active" : "date-pill-btn"}
+                  onClick={() => setSelectedDateIdx(dp.idx)}
+                >
+                  <strong className="date-day-label">{dp.dayLabel}</strong>
+                  <span className="date-num-label">{dp.dateStr}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
-            {cinemas.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                className={selectedLocation === c.name ? "loc-tab active" : "loc-tab"}
-                onClick={() => setSelectedLocation(c.name)}
+          {/* ADVANCED MULTI-FILTER BAR */}
+          <div className="advanced-filter-bar">
+            <div className="filter-group">
+              <label>📍 Cinema Location:</label>
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="filter-select-input"
               >
-                {c.name.split(" ")[0]} Cinema
-              </button>
-            ))}
+                <option value="all">All Cinemas ({cinemas.length})</option>
+                {cinemas.map((c) => (
+                  <option key={c.id} value={c.name}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>🎬 Format:</label>
+              <select
+                value={selectedFormatFilter}
+                onChange={(e) => setSelectedFormatFilter(e.target.value)}
+                className="filter-select-input"
+              >
+                <option value="all">All Formats (IMAX, 4DX, Atmos)</option>
+                <option value="IMAX">IMAX 3D Laser</option>
+                <option value="DOLBY">Dolby Atmos Sound</option>
+                <option value="4DX">4DX Motion 3D</option>
+                <option value="VIP">2D VIP Recliners</option>
+              </select>
+            </div>
           </div>
 
           {loading ? (
@@ -1784,56 +1860,53 @@ function App() {
             </div>
           ) : error ? (
             <p className="error-message">{error}</p>
-          ) : filteredShowtimes.length === 0 ? (
+          ) : Object.keys(showtimesGroupedByMovie).length === 0 ? (
             <p className="message">
               No showtimes currently available for your search.
             </p>
           ) : (
-            <div className="showtime-list">
-              {filteredShowtimes.map((showtime) => (
-                <article className="showtime-card" key={showtime.id}>
-                  <div className="showtime-movie">
-                    <div className="showtime-play-icon">▶</div>
-                    <div>
-                      <h3>{showtime.movie?.title || "Movie Session"}</h3>
-                      <p className="showtime-cinema-location">
-                        📍 {showtime.hall?.cinema?.name || "Cinemax Branch"}
-                      </p>
-                      <div className="hall-badge-row">
-                        <span className="hall-pill">
-                          {showtime.hall?.name || "Main Hall"}
-                        </span>
-                        <span className="format-tag">
-                          {getFormatTag(showtime.id)}
-                        </span>
+            /* GROUPED ACCORDION SHOWTIMES BY MOVIE */
+            <div className="showtime-accordion-list">
+              {Object.entries(showtimesGroupedByMovie).map(([movieTitle, group]) => (
+                <article className="grouped-showtime-card" key={movieTitle}>
+                  <div className="grouped-card-header">
+                    <div className="movie-header-left">
+                      <span className="showtime-movie-icon">🎬</span>
+                      <div>
+                        <h3>{movieTitle}</h3>
+                        <div className="movie-meta-tags">
+                          <span className="genre-pill">{group.movie?.genre || "Action / Drama"}</span>
+                          <span className="duration-pill">⏱️ {group.movie?.duration || 120} min</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="showtime-time-block">
-                    <span className="showtime-date">
-                      📅 {formatDate(showtime.startsAt)}
-                    </span>
-                    <strong className="showtime-clock">
-                      ⏰ {formatTime(showtime.startsAt)}
-                    </strong>
-                  </div>
+                  <div className="cinema-sessions-list">
+                    {Object.entries(group.cinemas).map(([cinemaName, sessions]) => (
+                      <div className="cinema-session-row" key={cinemaName}>
+                        <div className="cinema-row-label">
+                          <strong>📍 {cinemaName}</strong>
+                          <small>{sessions[0]?.hall?.name || "Main Screen"}</small>
+                        </div>
 
-                  <div className="showtime-price-block">
-                    <span className="price-label">Ticket From</span>
-                    <strong className="price-value">
-                      KSh {formatPrice(showtime.price)}
-                    </strong>
-                  </div>
-
-                  <div className="showtime-action-block">
-                    <button
-                      type="button"
-                      className="primary-button compact glow-btn"
-                      onClick={() => openSeatSelection(showtime)}
-                    >
-                      💺 Select Seats
-                    </button>
+                        <div className="showtime-pills-wrap">
+                          {sessions.map((session) => (
+                            <button
+                              key={session.id}
+                              type="button"
+                              className="showtime-pill-btn"
+                              onClick={() => openSeatSelection(session)}
+                              title={`Book ${formatTime(session.startsAt)} session for KSh ${formatPrice(session.price)}`}
+                            >
+                              <span className="pill-time">{formatTime(session.startsAt)}</span>
+                              <span className="pill-format">{getFormatTag(session.id)}</span>
+                              <span className="pill-price">KSh {formatPrice(session.price)}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </article>
               ))}
@@ -1909,6 +1982,19 @@ function App() {
           )}
         </section>
       </main>
+
+      {/* MOBILE FLOATING ACTION BUTTON (QUICK BOOK FAB) */}
+      <button
+        type="button"
+        className="mobile-quick-book-fab"
+        onClick={() => {
+          document.getElementById("showtimes")?.scrollIntoView({ behavior: "smooth" });
+        }}
+        title="Quick Book Movie Sessions"
+      >
+        <span>⚡</span>
+        <strong>Quick Book</strong>
+      </button>
 
       {/* FLOATING APP DOWNLOAD BUTTON */}
       <button
@@ -2926,17 +3012,17 @@ function App() {
                     </div>
                   </div>
 
-                  {/* RIGHT: PAYMENT METHODS */}
+                  {/* RIGHT: PAYMENT METHODS (1-CLICK WALLET PROMINENT) */}
                   <div className="checkout-payment-box">
                     <h3>💳 Select Payment Method</h3>
 
                     <div className="payment-method-selector">
                       <button
                         type="button"
-                        className={paymentMethod === "wallet" ? "pm-tab active" : "pm-tab"}
+                        className={paymentMethod === "wallet" ? "pm-tab active 1click-wallet-highlight" : "pm-tab 1click-wallet-highlight"}
                         onClick={() => setPaymentMethod("wallet")}
                       >
-                        💳 Cinemax Digital Wallet (Balance: KSh {formatPrice(walletBalance)})
+                        ⚡ Pay with Cinemax Wallet (1-Click) — Balance: KSh {formatPrice(walletBalance)}
                       </button>
 
                       <button
@@ -2968,7 +3054,7 @@ function App() {
                     {paymentMethod === "wallet" && (
                       <div className="payment-form-panel">
                         <p className="payment-hint">
-                          ⚡ Deduct KSh {formatPrice(finalTotalPrice)} instantly from your Cinemax Wallet.
+                          ⚡ Instant 1-Click Payment! KSh {formatPrice(finalTotalPrice)} will be deducted from your Cinemax Wallet.
                           <br />
                           Current Wallet Balance: <strong>KSh {formatPrice(walletBalance)}</strong>
                         </p>
